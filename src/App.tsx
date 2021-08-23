@@ -59,8 +59,11 @@ function App() {
     setAnswerDisabled(false);
 
     if (speakSequence) {
-      let utterance = new SpeechSynthesisUtterance(newSequence.join(", "));
+      const voices = window.speechSynthesis.getVoices();
+      const utterance = new SpeechSynthesisUtterance(newSequence.join(", "));
       utterance.rate = utteranceSpeed;
+      utterance.voice =
+        voices.find((voice) => voice.lang === "en-US") || voices[0];
       utterance.onend = () => {
         if (!displaySequence) {
           setAnswerVisible(true);
