@@ -27,6 +27,7 @@ function App() {
   const [isAnswerDisabled, setAnswerDisabled] = useState(false);
   const [speakSequence, setSpeakSequence] = useState(false);
   const [displaySequence, setDisplaySequence] = useState(true);
+  const [utteranceSpeed, setUtteranceSpeed] = useState(1);
 
   useEffect(() => {
     if (!timeLeft) {
@@ -58,7 +59,8 @@ function App() {
     setAnswerDisabled(false);
 
     if (speakSequence) {
-      let utterance = new SpeechSynthesisUtterance(newSequence.join("."));
+      let utterance = new SpeechSynthesisUtterance(newSequence.join(", "));
+      utterance.rate = utteranceSpeed;
       utterance.onend = () => {
         if (!displaySequence) {
           setAnswerVisible(true);
@@ -150,6 +152,21 @@ function App() {
             />
             <Typography id="time-selector" gutterBottom>
               Memorisation Time: {memoryTime} secs
+            </Typography>
+          </SliderContainer>
+
+          <SliderContainer>
+            <Slider
+              value={utteranceSpeed}
+              aria-labelledby="speed-selector"
+              step={0.1}
+              min={0.1}
+              max={3}
+              valueLabelDisplay="auto"
+              onChange={(_, value) => setUtteranceSpeed(value as number)}
+            />
+            <Typography id="speed-selector" gutterBottom>
+              Voice speed: {utteranceSpeed}
             </Typography>
           </SliderContainer>
 
