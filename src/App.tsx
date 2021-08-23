@@ -5,12 +5,13 @@ import {
   AppContainer,
   ControlsContainer,
   InnerContainer,
-  MainTitle,
   RangeContainer,
   RangeInput,
   RevealButton,
   Sequence,
   SliderContainer,
+  TimeLeft,
+  TopButtonsContainer,
 } from "./App.styles";
 
 function App() {
@@ -23,6 +24,9 @@ function App() {
   const [isAnswerVisible, setAnswerVisible] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [answer, setAnswer] = useState<(string | null)[]>([]);
+  const [isAnswerDisabled, setAnswerDisabled] = useState(false);
+  const [speakSequence, setSpeakSequence] = useState(false);
+  const [displaySequence, setDisplaySequence] = useState(true);
 
   useEffect(() => {
     if (!timeLeft) {
@@ -37,7 +41,7 @@ function App() {
       setTimeLeft(timeLeft - 1);
     }, 1000);
     return () => clearInterval(interval);
-  }, [timeLeft, sequence]);
+  }, [timeLeft, sequence, gameStarted]);
 
   const generateSequence = () => {
     const newSequence: number[] = [];
@@ -48,9 +52,20 @@ function App() {
     setAnswer(new Array(sequenceLength).fill(""));
     setSequence(newSequence);
     setTimeLeft(memoryTime);
-    setSequenceVisible(true);
+    setSequenceVisible(displaySequence ? true : false);
     setAnswerVisible(false);
     setGameStarted(true);
+    setAnswerDisabled(false);
+
+    if (speakSequence) {
+      let utterance = new SpeechSynthesisUtterance(newSequence.join("."));
+      utterance.onend = () => {
+        if (!displaySequence) {
+          setAnswerVisible(true);
+        }
+      };
+      speechSynthesis.speak(utterance);
+    }
   };
 
   const handleAnswer = (index: number, value: string) => {
@@ -69,12 +84,11 @@ function App() {
           <AnswerContainer
             key={index}
             value={answer[index] as string}
-            disabled={isSequenceVisible}
+            disabled={isAnswerDisabled}
             $isVisible={isAnswerVisible}
             type="number"
             onChange={(event) => handleAnswer(index, event.target.value)}
             isCorrect={checkCorrectedness(index)}
-            isRevealed={isSequenceVisible}
           />
         ))}
       </div>
@@ -83,14 +97,32 @@ function App() {
 
   const revealAnswer = () => {
     setSequenceVisible(true);
+    setAnswerDisabled(true);
   };
 
   return (
     <AppContainer>
       <InnerContainer>
-        <MainTitle>SEQUENCE MEMORY v.2</MainTitle>
+        <h1>SEQUENCE MEMORY v.2</h1>
 
         <ControlsContainer>
+          <TopButtonsContainer>
+            <Button
+              variant={displaySequence ? "contained" : "outlined"}
+              color="primary"
+              onClick={() => setDisplaySequence(!displaySequence)}
+            >
+              Display
+            </Button>
+            <Button
+              variant={speakSequence ? "contained" : "outlined"}
+              color="secondary"
+              onClick={() => setSpeakSequence(!speakSequence)}
+            >
+              Speak
+            </Button>
+          </TopButtonsContainer>
+
           <SliderContainer>
             <Slider
               value={sequenceLength}
@@ -131,7 +163,11 @@ function App() {
           </RangeContainer>
         </ControlsContainer>
 
-        <Button variant="contained" onClick={generateSequence}>
+        <Button
+          variant="contained"
+          onClick={generateSequence}
+          disabled={!speakSequence && !displaySequence}
+        >
           Generate Sequence
         </Button>
 
@@ -141,12 +177,14 @@ function App() {
 
         {renderAnswerInputs()}
 
-        <h2>Time remaining: {timeLeft}</h2>
+        <TimeLeft $isVisible={displaySequence}>
+          Time remaining: {timeLeft}
+        </TimeLeft>
 
         <RevealButton
           variant="contained"
           onClick={revealAnswer}
-          $isVisible={!isSequenceVisible && gameStarted}
+          $isVisible={true}
         >
           Reveal Answer
         </RevealButton>

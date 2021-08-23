@@ -8,7 +8,7 @@ interface GenericProps {
 interface AnswerProps {
   $isVisible: boolean;
   isCorrect: boolean;
-  isRevealed: boolean;
+  disabled: boolean;
 }
 
 export const AppContainer = styled.div`
@@ -16,10 +16,6 @@ export const AppContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #001529;
-`;
-
-export const MainTitle = styled.h1`
-  margin-bottom: 2em;
 `;
 
 export const ControlsContainer = styled.div`
@@ -30,7 +26,13 @@ export const ControlsContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 5;
+`;
+
+export const TopButtonsContainer = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-evenly;
+  margin-bottom: 1em;
 `;
 
 export const SliderContainer = styled.div`
@@ -67,7 +69,7 @@ export const AnswerContainer = styled.input<AnswerProps>`
   width: 2em;
   margin: 1em;
   visibility: ${({ $isVisible: visible }) => getVisibility(visible)};
-  border: ${({ isCorrect, isRevealed }) => getBorder(isCorrect, isRevealed)};
+  border: ${({ isCorrect, disabled }) => getBorder(isCorrect, disabled)};
   box-sizing: border-box;
   font-size: large;
 
@@ -80,6 +82,10 @@ export const AnswerContainer = styled.input<AnswerProps>`
     -webkit-appearance: none;
     margin: 0;
   }
+`;
+
+export const TimeLeft = styled.h2<GenericProps>`
+  visibility: ${({ $isVisible: visible }) => getVisibility(visible)};
 `;
 
 export const RevealButton = styled(Button)<GenericProps>`
