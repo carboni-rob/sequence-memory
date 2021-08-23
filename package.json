@@ -1,7 +1,8 @@
 {
   "name": "sequence-memory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
+  "homepage": "http://carboni-rob.github.io/sequence-memory/",
   "dependencies": {
     "@material-ui/core": "^4.12.3",
     "@testing-library/jest-dom": "^5.11.4",
@@ -23,7 +24,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "yarn build",
+    "deploy": "gh-pages -d build"
   },
   "eslintConfig": {
     "extends": [
@@ -45,5 +48,8 @@
   },
   "resolutions": {
     "styled-components": "^5"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3"
   }
 }
