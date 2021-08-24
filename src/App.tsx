@@ -20,6 +20,11 @@ import {
   TopButtonsContainer,
 } from "./App.styles";
 
+interface Run {
+  total: number;
+  correct: number;
+}
+
 function App() {
   const [memoryTime, setMemoryTime] = useState(5);
   const [sequence, setSequence] = useState<number[]>([0]);
@@ -29,18 +34,26 @@ function App() {
   const [isSequenceVisible, setSequenceVisible] = useState(false);
   const [isAnswerVisible, setAnswerVisible] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
-  const [answer, setAnswer] = useState<(string | null)[]>([]);
+  const [answers, setAnswers] = useState<(string | null)[]>([]);
   const [isAnswerDisabled, setAnswerDisabled] = useState(false);
   const [speakSequence, setSpeakSequence] = useState(false);
   const [displaySequence, setDisplaySequence] = useState(true);
   const [utteranceSpeed, setUtteranceSpeed] = useState(1);
   const [backwards, setBackwards] = useState(false);
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [isRevealDisabled, setRevealDisabled] = useState(true);
+
+  const usageStatisticsItem = localStorage.getItem("usageStatistics");
+  const usageStatistics: Run[] = usageStatisticsItem
+    ? JSON.parse(usageStatisticsItem)
+    : [];
 
   useEffect(() => {
     if (!timeLeft) {
       if (gameStarted) {
         setSequenceVisible(false);
         setAnswerVisible(true);
+        setRevealDisabled(false);
       }
       return;
     }
@@ -57,13 +70,14 @@ function App() {
       newSequence.push(Math.floor(Math.random() * parseInt(range)));
     }
 
-    setAnswer(new Array(sequenceLength).fill(""));
+    setAnswers(new Array(sequenceLength).fill(""));
     setSequence(newSequence);
     setTimeLeft(memoryTime);
     setSequenceVisible(displaySequence ? true : false);
     setAnswerVisible(false);
     setGameStarted(true);
     setAnswerDisabled(false);
+    setCorrectAnswers(0);
 
     if (speakSequence) {
       const voices = window.speechSynthesis.getVoices();
@@ -74,6 +88,7 @@ function App() {
       utterance.onend = () => {
         if (!displaySequence) {
           setAnswerVisible(true);
+          setRevealDisabled(false);
         }
       };
       speechSynthesis.speak(utterance);
@@ -81,24 +96,34 @@ function App() {
   };
 
   const handleAnswer = (index: number, value: string) => {
-    const newAnswer = [...answer];
+    const newAnswer = [...answers];
     newAnswer[index] = value;
-    setAnswer(newAnswer);
+    setAnswers(newAnswer);
+  };
+
+  const countCorrectAnswers = () => {
+    const correctArray = backwards ? [...sequence].reverse() : sequence;
+    const answerArray = answers.map((answer) => parseInt(answer as string));
+    const correctAnswersArray = answerArray.length
+      ? answerArray.filter((answer, index) => correctArray[index] === answer)
+      : [];
+
+    return correctAnswersArray.length;
   };
 
   const checkCorrectedness = (index: number): boolean => {
     const correctArray = backwards ? [...sequence].reverse() : sequence;
 
-    return correctArray[index]?.toString() === answer[index];
+    return correctArray[index]?.toString() === answers[index];
   };
 
   const renderAnswerInputs = () => {
     return (
       <div>
-        {answer.map((_, index) => (
+        {answers.map((_, index) => (
           <AnswerContainer
             key={index}
-            value={answer[index] as string}
+            value={answers[index] as string}
             disabled={isAnswerDisabled}
             $isVisible={isAnswerVisible}
             type="number"
@@ -111,8 +136,18 @@ function App() {
   };
 
   const revealAnswer = () => {
+    setRevealDisabled(true);
     setSequenceVisible(true);
     setAnswerDisabled(true);
+    const correctAnswers = countCorrectAnswers();
+    setCorrectAnswers(correctAnswers);
+
+    usageStatistics.push({
+      total: sequence.length,
+      correct: correctAnswers,
+    });
+
+    localStorage.setItem("usageStatistics", JSON.stringify(usageStatistics));
   };
 
   const isBackwardsSwitchDisabled = (): boolean => {
@@ -120,8 +155,28 @@ function App() {
     return timeLeft !== 0 || !isAnswerDisabled;
   };
 
+  const correctCount = usageStatistics.length
+    ? usageStatistics
+        .map((run) => run.correct)
+        .reduce((acc: number, correctAnswers: number) => acc + correctAnswers)
+    : 0;
+
+  const totalCount = usageStatistics.length
+    ? usageStatistics
+        .map((run) => run.total)
+        .reduce((acc: number, totalAnswers: number) => acc + totalAnswers)
+    : 0;
+
+  const percentage = totalCount
+    ? ((correctCount * 100) / totalCount).toFixed(2)
+    : 0;
+
   return (
     <AppContainer>
+      <h2>
+        You have answered correctly {correctCount} times out of {totalCount} in{" "}
+        {usageStatistics.length} runs ({percentage}%)
+      </h2>
       <InnerContainer>
         <h1>SEQUENCE MEMORY v.2</h1>
 
@@ -231,9 +286,13 @@ function App() {
           variant="contained"
           onClick={revealAnswer}
           $isVisible={true}
+          disabled={isRevealDisabled}
         >
           Reveal Answer
         </RevealButton>
+        <h2>
+          ({correctAnswers} out of {sequence.length})
+        </h2>
       </InnerContainer>
     </AppContainer>
   );

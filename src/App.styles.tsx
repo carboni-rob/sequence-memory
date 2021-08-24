@@ -13,6 +13,7 @@ interface AnswerProps {
 
 export const AppContainer = styled.div`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   background-color: #afb0b1;
