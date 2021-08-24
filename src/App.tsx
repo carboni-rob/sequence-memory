@@ -1,11 +1,17 @@
-import { Button, Slider, Typography } from "@material-ui/core";
+import {
+  Button,
+  FormControlLabel,
+  Slider,
+  Switch,
+  Typography,
+} from "@material-ui/core";
 import { useEffect, useState } from "react";
 import {
   AnswerContainer,
   AppContainer,
   ControlsContainer,
   InnerContainer,
-  RangeContainer,
+  RowContainer,
   RangeInput,
   RevealButton,
   Sequence,
@@ -28,6 +34,7 @@ function App() {
   const [speakSequence, setSpeakSequence] = useState(false);
   const [displaySequence, setDisplaySequence] = useState(true);
   const [utteranceSpeed, setUtteranceSpeed] = useState(1);
+  const [backwards, setBackwards] = useState(false);
 
   useEffect(() => {
     if (!timeLeft) {
@@ -79,8 +86,11 @@ function App() {
     setAnswer(newAnswer);
   };
 
-  const checkCorrectedness = (index: number): boolean =>
-    sequence[index]?.toString() === answer[index];
+  const checkCorrectedness = (index: number): boolean => {
+    const correctArray = backwards ? [...sequence].reverse() : sequence;
+
+    return correctArray[index]?.toString() === answer[index];
+  };
 
   const renderAnswerInputs = () => {
     return (
@@ -173,14 +183,25 @@ function App() {
             </Typography>
           </SliderContainer>
 
-          <RangeContainer>
+          <RowContainer>
             <span>Numbers range: 0 to </span>
             <RangeInput
               type="number"
               value={range}
               onChange={(event) => setRange(event.target.value)}
             />
-          </RangeContainer>
+          </RowContainer>
+
+          <RowContainer>
+            <FormControlLabel
+              value={backwards}
+              onChange={(_, checked) => setBackwards(checked)}
+              disabled={timeLeft !== 0 || !isAnswerDisabled}
+              control={<Switch color="secondary" />}
+              label="Answer backwards"
+              labelPlacement="start"
+            />
+          </RowContainer>
         </ControlsContainer>
 
         <Button

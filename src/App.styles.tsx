@@ -15,7 +15,7 @@ export const AppContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #001529;
+  background-color: #afb0b1;
 `;
 
 export const ControlsContainer = styled.div`
@@ -39,7 +39,7 @@ export const SliderContainer = styled.div`
   margin: 0 0 1em 0;
 `;
 
-export const RangeContainer = styled.div`
+export const RowContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
