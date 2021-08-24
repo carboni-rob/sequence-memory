@@ -115,6 +115,11 @@ function App() {
     setAnswerDisabled(true);
   };
 
+  const isBackwardsSwitchDisabled = (): boolean => {
+    if (!gameStarted) return false;
+    return timeLeft !== 0 || !isAnswerDisabled;
+  };
+
   return (
     <AppContainer>
       <InnerContainer>
@@ -196,7 +201,7 @@ function App() {
             <FormControlLabel
               value={backwards}
               onChange={(_, checked) => setBackwards(checked)}
-              disabled={timeLeft !== 0 || !isAnswerDisabled}
+              disabled={isBackwardsSwitchDisabled()}
               control={<Switch color="secondary" />}
               label="Answer backwards"
               labelPlacement="start"
