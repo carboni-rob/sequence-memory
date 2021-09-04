@@ -1,4 +1,5 @@
 import {
+  AppBar,
   Button,
   FormControlLabel,
   Slider,
@@ -18,6 +19,7 @@ import {
   SliderContainer,
   TimeLeft,
   TopButtonsContainer,
+  AppToolbar,
 } from "./App.styles";
 
 interface Run {
@@ -42,11 +44,13 @@ function App() {
   const [backwards, setBackwards] = useState(false);
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [isRevealDisabled, setRevealDisabled] = useState(true);
+  const [stats, setStats] = useState<Run[]>([]);
 
-  const usageStatisticsItem = localStorage.getItem("usageStatistics");
-  const usageStatistics: Run[] = usageStatisticsItem
-    ? JSON.parse(usageStatisticsItem)
-    : [];
+  useEffect(() => {
+    const savedStats = localStorage.getItem("stats");
+    const usageStats: Run[] = savedStats ? JSON.parse(savedStats) : [];
+    setStats(usageStats);
+  }, []);
 
   useEffect(() => {
     if (!timeLeft) {
@@ -135,6 +139,10 @@ function App() {
     );
   };
 
+  const saveStats = (value: Run[]) => {
+    localStorage.setItem("stats", JSON.stringify(value));
+  };
+
   const revealAnswer = () => {
     setRevealDisabled(true);
     setSequenceVisible(true);
@@ -142,12 +150,22 @@ function App() {
     const correctAnswers = countCorrectAnswers();
     setCorrectAnswers(correctAnswers);
 
-    usageStatistics.push({
+    stats.push({
       total: sequence.length,
       correct: correctAnswers,
     });
 
-    localStorage.setItem("usageStatistics", JSON.stringify(usageStatistics));
+    saveStats(stats);
+  };
+
+  const resetStats = () => {
+    const conf = window.confirm(
+      "Do you really want to reset your usage statistics?"
+    );
+    if (conf) {
+      setStats([]);
+      saveStats([]);
+    }
   };
 
   const isBackwardsSwitchDisabled = (): boolean => {
@@ -155,14 +173,14 @@ function App() {
     return timeLeft !== 0 || !isAnswerDisabled;
   };
 
-  const correctCount = usageStatistics.length
-    ? usageStatistics
+  const correctCount = stats.length
+    ? stats
         .map((run) => run.correct)
         .reduce((acc: number, correctAnswers: number) => acc + correctAnswers)
     : 0;
 
-  const totalCount = usageStatistics.length
-    ? usageStatistics
+  const totalCount = stats.length
+    ? stats
         .map((run) => run.total)
         .reduce((acc: number, totalAnswers: number) => acc + totalAnswers)
     : 0;
@@ -173,13 +191,20 @@ function App() {
 
   return (
     <AppContainer>
-      <h2>
-        You have answered correctly {correctCount} times out of {totalCount} in{" "}
-        {usageStatistics.length} runs ({percentage}%)
-      </h2>
-      <InnerContainer>
-        <h1>SEQUENCE MEMORY v.2</h1>
+      <AppBar position="fixed">
+        <AppToolbar>
+          <Typography variant="h4">SEQUENCE MEMORY v.2</Typography>
+          <Typography variant="h6">
+            You have answered correctly {correctCount} times out of {totalCount}{" "}
+            in {stats.length} runs ({percentage}%)
+          </Typography>
+          <Button variant="contained" onClick={resetStats}>
+            Reset
+          </Button>
+        </AppToolbar>
+      </AppBar>
 
+      <InnerContainer>
         <ControlsContainer>
           <TopButtonsContainer>
             <Button

@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, Toolbar } from "@material-ui/core";
 import styled from "styled-components";
 
 interface GenericProps {
@@ -17,6 +17,12 @@ export const AppContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #afb0b1;
+`;
+
+export const AppToolbar = styled(Toolbar)`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
 `;
 
 export const ControlsContainer = styled.div`
