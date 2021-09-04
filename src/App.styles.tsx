@@ -17,6 +17,7 @@ export const AppContainer = styled.div`
   align-items: center;
   justify-content: center;
   background-color: #afb0b1;
+  margin-top: 2em;
 `;
 
 export const AppToolbar = styled(Toolbar)`
