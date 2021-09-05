@@ -1,4 +1,4 @@
-import { Button, Toolbar } from "@material-ui/core";
+import { Button, Paper } from "@material-ui/core";
 import styled from "styled-components";
 
 interface GenericProps {
@@ -20,10 +20,10 @@ export const AppContainer = styled.div`
   margin-top: 2em;
 `;
 
-export const AppToolbar = styled(Toolbar)`
+export const AppTitle = styled.div`
   display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
+  width: 100%;
 `;
 
 export const ControlsContainer = styled.div`
@@ -51,6 +51,7 @@ export const RowContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 1em;
 `;
 
 export const RangeInput = styled.input`
@@ -98,6 +99,11 @@ export const TimeLeft = styled.h2<GenericProps>`
 
 export const RevealButton = styled(Button)<GenericProps>`
   visibility: ${({ $isVisible: visible }) => getVisibility(visible)};
+`;
+
+export const StatsCard = styled(Paper)`
+  padding: 1em;
+  margin: 1em;
 `;
 
 const getVisibility = (isVisible: boolean): string =>

@@ -2,10 +2,15 @@ import {
   AppBar,
   Button,
   FormControlLabel,
+  IconButton,
   Slider,
+  SwipeableDrawer,
   Switch,
+  Toolbar,
   Typography,
 } from "@material-ui/core";
+import MenuIcon from "@material-ui/icons/Menu";
+import AssessmentIcon from "@material-ui/icons/Assessment";
 import { useEffect, useState } from "react";
 import {
   AnswerContainer,
@@ -19,7 +24,8 @@ import {
   SliderContainer,
   TimeLeft,
   TopButtonsContainer,
-  AppToolbar,
+  AppTitle,
+  StatsCard,
 } from "./App.styles";
 
 interface Run {
@@ -45,6 +51,7 @@ function App() {
   const [correctAnswers, setCorrectAnswers] = useState(0);
   const [isRevealDisabled, setRevealDisabled] = useState(true);
   const [stats, setStats] = useState<Run[]>([]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const savedStats = localStorage.getItem("stats");
@@ -192,16 +199,20 @@ function App() {
   return (
     <AppContainer>
       <AppBar position="fixed">
-        <AppToolbar>
-          <Typography variant="h4">SEQUENCE MEMORY v.2</Typography>
-          <Typography variant="h6">
-            You have answered correctly {correctCount} times out of {totalCount}{" "}
-            in {stats.length} runs ({percentage}%)
-          </Typography>
-          <Button variant="contained" onClick={resetStats}>
-            Reset
-          </Button>
-        </AppToolbar>
+        <Toolbar>
+          <IconButton
+            title="Usage Stats"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+          <AppTitle>
+            <Typography variant="h4">SEQUENCE MEMORY v.2</Typography>
+          </AppTitle>
+        </Toolbar>
       </AppBar>
 
       <InnerContainer>
@@ -319,6 +330,31 @@ function App() {
           ({correctAnswers} out of {sequence.length})
         </h2>
       </InnerContainer>
+
+      <SwipeableDrawer
+        anchor="left"
+        open={drawerOpen}
+        onOpen={() => setDrawerOpen(true)}
+        onClose={() => setDrawerOpen(false)}
+      >
+        <StatsCard>
+          <RowContainer>
+            <AssessmentIcon />
+            <Typography variant="h5"> Usage Stats:</Typography>
+          </RowContainer>
+          <RowContainer>
+            <Typography variant="h6">
+              You have answered correctly {correctCount} times out of{" "}
+              {totalCount} in {stats.length} runs ({percentage}%)
+            </Typography>
+          </RowContainer>
+          <RowContainer>
+            <Button variant="contained" onClick={resetStats}>
+              Reset
+            </Button>
+          </RowContainer>
+        </StatsCard>
+      </SwipeableDrawer>
     </AppContainer>
   );
 }
