@@ -12,12 +12,13 @@ interface AnswerProps {
 }
 
 export const AppContainer = styled.div`
+  width: 100%;
+  height: 90vh;
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   background-color: #afb0b1;
-  margin-top: 2em;
 `;
 
 export const AppTitle = styled.div`
@@ -26,13 +27,20 @@ export const AppTitle = styled.div`
   width: 100%;
 `;
 
+export const ControlsCard = styled(Paper)`
+  padding: 1em;
+  margin-top: 3em;
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+`;
+
 export const ControlsContainer = styled.div`
-  margin: 1em 0;
-  width: 100%;
-  max-width: 22em;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
 `;
 
@@ -64,13 +72,13 @@ export const Sequence = styled.h2<GenericProps>`
   visibility: ${({ $isVisible: visible }) => getVisibility(visible)};
 `;
 
-export const InnerContainer = styled.div`
+export const SequenceContainer = styled.div`
   display: flex;
+  flex: 3;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   color: white;
-  padding: 2em;
 `;
 
 export const AnswerContainer = styled.input<AnswerProps>`

@@ -16,7 +16,7 @@ import {
   AnswerContainer,
   AppContainer,
   ControlsContainer,
-  InnerContainer,
+  SequenceContainer,
   RowContainer,
   RangeInput,
   RevealButton,
@@ -26,6 +26,7 @@ import {
   TopButtonsContainer,
   AppTitle,
   StatsCard,
+  ControlsCard,
 } from "./App.styles";
 
 interface Run {
@@ -215,8 +216,11 @@ function App() {
         </Toolbar>
       </AppBar>
 
-      <InnerContainer>
+      <ControlsCard>
         <ControlsContainer>
+          <RowContainer>
+            <Typography variant="h5">Controls</Typography>
+          </RowContainer>
           <TopButtonsContainer>
             <Button
               variant={displaySequence ? "contained" : "outlined"}
@@ -300,6 +304,14 @@ function App() {
           </RowContainer>
         </ControlsContainer>
 
+        <RowContainer onClick={() => setDrawerOpen(true)}>
+          <Button size="large" startIcon={<AssessmentIcon />}>
+            Usage Stats
+          </Button>
+        </RowContainer>
+      </ControlsCard>
+
+      <SequenceContainer>
         <Button
           variant="contained"
           onClick={generateSequence}
@@ -329,7 +341,7 @@ function App() {
         <h2>
           ({correctAnswers} out of {sequence.length})
         </h2>
-      </InnerContainer>
+      </SequenceContainer>
 
       <SwipeableDrawer
         anchor="left"
@@ -344,8 +356,8 @@ function App() {
           </RowContainer>
           <RowContainer>
             <Typography variant="h6">
-              You have answered correctly {correctCount} times out of{" "}
-              {totalCount} in {stats.length} runs ({percentage}%)
+              You answered correctly {correctCount} times out of {totalCount} in{" "}
+              {stats.length} runs ({percentage}%)
             </Typography>
           </RowContainer>
           <RowContainer>
